@@ -1,0 +1,57 @@
+﻿
+@{
+    ViewBag.Title = "AskQuery";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h3>Ask for Clarification</h3>
+<label for="sel1">Choose Problem</label>
+<select id="sel1" class="sel form-control">
+    <option value="1">A</option>
+    <option value="2">B</option>
+    <option value="3">C</option>
+    <option value="4">D</option>
+    <option value="5">E</option>
+</select>
+<hr/>
+
+<div class="jumbotron">
+    <textarea id="qryMessage"></textarea>
+    <br />
+    <button type="button" id="sendMsg" class="btn btn-success">Submit</button>
+</div>
+
+
+<div class="askedQuestions">
+
+</div>
+
+<div class="adminReply">
+
+</div>
+
+@section scripts{
+    <script src="~/Scripts/jquery.signalR-2.2.2.min.js"></script>
+    <script src="/SignalR/hubs"></script>
+    <script>
+        $(function () {
+            $.connection.hub.start().done(function () {
+
+                $('#sendMsg').on('click', function () {
+                    var msg = $('#qryMessage').val();
+                    $('#qryMessage').val('').focus();
+                    var id = $('.sel').find(":selected").text();
+                    var txt = '<h4>' +'Q: '+ msg + '</h4>';
+                    $('.adminReply').append(txt);
+                    $.connection.devHub.server.askQuery(id,msg); 
+                })
+            })
+
+            $.connection.devHub.client.QueryResponder = function (reply) {
+                var txt = '<h4>' + 'Admin: '+ reply + '</h4>';
+                $('.adminReply').append(txt);
+            }
+        });
+    </script>
+
+}

@@ -1,0 +1,39 @@
+﻿
+@{
+    ViewBag.Title = "RespondQuery";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h3>Respond Queries from Contestants</h3>
+
+<div class="jumbotron">
+    <span style="align-content:center"></span>
+    <textarea id="replyMessage"></textarea>
+    <br />
+    <button type="button" id="replyMsg" class="btn btn-success">Submit</button>
+</div>
+
+<div class="clientQuestions">
+
+</div>
+
+
+@section scripts{
+    <script src="~/Scripts/jquery.signalR-2.2.2.min.js"></script>
+    <script src="/SignalR/hubs"></script>
+    <script>
+        $(function () {
+            $.connection.hub.start().done(function () {
+                $('#replyMsg').on('click', function () {
+                    var msg = $('#replyMessage').val();
+                    $.connection.devHub.server.broadCastReply(msg);
+                })
+            })
+
+            $.connection.devHub.client.QueryReciever = function (id,qry) {
+                var txt = '<h4>' +'User Query for Problem '+id+' : '+ qry + '</h4>';
+                $('.clientQuestions').append(txt);
+            }
+        });
+    </script>
+}
